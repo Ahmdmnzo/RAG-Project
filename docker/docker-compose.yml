@@ -7,12 +7,17 @@ services:
       - "27017:27017"
 
     volumes:
-      - ./mongodb:/data/db
+      # غيرنا السطر ده عشان نستخدم الـ Volume اللي عرفناه تحت
+      - mongodb_data:/data/db
 
-    networks:
+    networks: 
       - backend
 
     restart: always
 
 networks:
-  backend:
+  backend: 
+
+# ضيفنا الجزء ده عشان نعرف الـ Volume المستقل
+volumes:
+  mongodb_data:

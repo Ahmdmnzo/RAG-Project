@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-from bson.objected import ObjectId
+from bson import ObjectId
 
 class DataChunk(BaseModel):
     _id: Optional[ObjectId]
@@ -10,4 +10,4 @@ class DataChunk(BaseModel):
     chunk_project_id: ObjectId
 
     class Config:
-        arbirtraty_types_allowed = True
+        arbitrary_types_allowed = True
