@@ -10,7 +10,7 @@ logger = logging.getLogger('uvicorn.error')
 
 from .schemas.data import ProcessRequest
 from models.ProjectModel import ProjectModel
-from models.db_schemas import DataChunk
+from models.db_schemes import DataChunk
 from models.ProjectModel import ProjectModel
 from models.ChunkModel import ChunkModel
 data_router = APIRouter(
@@ -22,7 +22,7 @@ data_controller = DataController()
 async def upload_data(request: Request, project_id: str,  file: UploadFile,
                       app_settings: Settings=Depends(get_settings)):
 
-    project_model = ProjectModel(
+    project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
     )
 
@@ -72,7 +72,7 @@ async def process_endpoint(request: Request, project_id: str, process_request: P
     do_reset = process_request.do_reset
 
 
-    project_model = ProjectModel(
+    project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
     )
 
@@ -113,12 +113,12 @@ async def process_endpoint(request: Request, project_id: str, process_request: P
         for i, chunk in enumerate(file_chunks)
     ]
 
-    chunk_model = ChunkModel(
+    chunk_model = await ChunkModel.create_instance(
         db_client=request.app.db_client
     )
 
     if do_reset == 1:
-        _ = await chunk_model.delete_chunk_by_project_id(
+        _ = await chunk_model.delete_chunks_by_project_id(
             project_id=project.id
         )
 

@@ -3,7 +3,6 @@ from typing import Optional
 from bson.objectid import ObjectId
 
 class Project(BaseModel):
-    # غيرنا _id لـ id واستخدمنا Alias عشان يفهم إن أصلها في مونجو _id
     id: Optional[ObjectId] = Field(None, alias="_id")
     project_id: str = Field(..., min_length=1)
 
@@ -15,5 +14,17 @@ class Project(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
-        # السطر ده ضروري عشان تقدر تنادي على id وتكتبها _id برضه لو حبيت
         populate_by_name = True
+
+    @classmethod
+    def get_indexes(cls):
+
+        return [
+            {
+                "key": [
+                    ("project_id", 1)
+                ],
+                "name": "project_id_index_1",
+                "unique": True
+            }
+        ]
