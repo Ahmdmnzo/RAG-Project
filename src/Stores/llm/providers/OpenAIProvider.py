@@ -7,22 +7,23 @@ class OpenAIProvider(LLMInterface):
     def __init__(self, api_key: str, api_url: str=None, 
                        default_input_max_character: int=1000,
                        default_generation_max_output_tokens: int=1000,
-                       default_generation_temprerature: float=0.1):
+                       default_generation_temperature: float=0.1):
 
         self.api_key = api_key
         self.api_url = api_url
 
         self.default_input_max_character = default_input_max_character
         self.default_generation_max_output_tokens = default_generation_max_output_tokens
-        self.default_generation_temprerature = default_generation_temprerature
+        self.default_generation_temperature = default_generation_temperature
 
         self.generation_model_id = None
         self.embedding_model_id = None
         self.embedding_size = None
+        self.enums = OpenAIEnums
 
         self.client = OpenAI(
             api_key = self.api_key,
-            api_url = self.api_url
+            base_url = self.api_url if self.api_url and len(self.api_url) else None
         )
 
         self.logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class OpenAIProvider(LLMInterface):
             return None
 
         max_output_tokens = max_output_tokens if max_output_tokens else self.default_generation_max_output_tokens
-        temperature = temperature if temperature else self.default_generation_temprerature
+        temperature = temperature if temperature else self.default_generation_temperature
 
         chat_history.append(
             self.construct_prompt(prompt=prompt, role=OpenAIEnums.USER.value)
@@ -66,7 +67,7 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("Error while generation text with OpenAI")
             return None
 
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
 
 
     def embed_text(self, text: str, document_type: str=None):
